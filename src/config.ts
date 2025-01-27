@@ -24,4 +24,5 @@ async function loadFileAndGetLines(filePath : string) {
 
 export const cascadeMoons = await loadFileAndGetLines("/cascademoons.txt");
 export const cascadeReq = [-1, -1, -1, 0, -1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3];
+export const cascadeMultiMoons = [3];
   

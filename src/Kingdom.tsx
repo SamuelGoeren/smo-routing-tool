@@ -7,13 +7,14 @@ interface KingdomProps {
     moonNames: string[];
     moonsToLeave: number;
     moonRequirements: number[];
+    multiMoons: number[];
     moonColor: string;
 }
 
 
 
 export const Kingdom: React.FC<KingdomProps> = (props) => {
-    const {name, moonsToLeave, moonNames, moonRequirements, moonColor} = props;
+    const {name, moonsToLeave, moonNames, moonRequirements, multiMoons, moonColor} = props;
     const moonImage = `/${moonColor}moon.png`;
 
     function setupAvailableMoons() : number[]{
@@ -27,6 +28,12 @@ export const Kingdom: React.FC<KingdomProps> = (props) => {
     }
 
     function collectMoon(moon: number) : void{
+        let moonCount = 1;
+        if(multiMoons.includes(moon)){
+            moonCount = 3;
+        }
+        setCollectedMoonCount(collectedMoonCount + moonCount);
+
         let newAvailable = availableMoons.filter(m => m !== moon);
         for(let i = 0; i < moonRequirements.length; i++){
             if(moonRequirements[i] === moon) newAvailable.push(i);
@@ -38,6 +45,7 @@ export const Kingdom: React.FC<KingdomProps> = (props) => {
 
     const [finishedMoons, setFinishedMoons] = React.useState<number[]>([]);
     const [availableMoons, setAvailableMoons] = React.useState<number[]>(setupAvailableMoons());
+    const [collectedMoonCount, setCollectedMoonCount] = React.useState<number>(0);
 
 // Define styles using sx prop
 const styles = {
@@ -77,7 +85,7 @@ const styles = {
     return(
         <>
         <Box sx={styles.container}>
-            <Typography>Collected moons: ({finishedMoons.length})</Typography>
+            <Typography>Collected moons: ({collectedMoonCount})</Typography>
             {finishedMoons.map((moon) => (
                 <Typography>
                     {moonNames[moon]}
@@ -96,7 +104,7 @@ const styles = {
           />
         ))}
       </Box>
-        {(finishedMoons.length >= moonsToLeave) ? (
+        {(collectedMoonCount >= moonsToLeave) ? (
             <Box sx={styles.buttonContainer}>
             <Button>
                 <Typography>
