@@ -21,7 +21,8 @@ This will be usable to test/verify routes faster than ever before!
 -Sandbox mode: select any kingdom at any time with their different scenarios
 
 -Handle other relevant game events (talking to NPCs, collecting purple coins etc.)
-and much more!
+
+-And much more!
 
 <h2>Setup</h2>
 install nodejs if you haven't
