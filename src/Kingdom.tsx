@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Grid2, Typography } from "@mui/material";
 import Moon from "./Moon";
 import React, { useEffect } from "react";
 import { KingdomProps } from "interface/interface";
@@ -31,6 +31,7 @@ export const Kingdom: React.FC<KingdomProps> = ({
 
 
     const moonImage = `/moonicons/${moonColor}moon.png`;
+    const multiMoonImage = `/moonicons/${moonColor}multimoon.png`;
 
     function setupAvailableMoons() : number[]{
         let result = [];
@@ -119,21 +120,20 @@ const styles = {
             ))}
             <Typography> Total moons in the odyssey: {totalMoons}</Typography>
         </Box>
-
         <Box sx={styles.moonContainer}>
         {availableMoons.map((moon) => (
           <Moon
             key={moon}
             onClick={collectMoon}
             number={moon}
-            image={moonImage}
+            image={multiMoons.includes(moon) ? multiMoonImage : moonImage}
             name={moonNames[moon]}
           />
         ))}
       </Box>
         {(collectedMoonCount >= moonsToLeave) ? (
             <Box sx={styles.buttonContainer}>
-            <Button onClick={handleLeaveKingdom}>
+            <Button variant="contained" color="success" onClick={handleLeaveKingdom}>
                 <Typography>
                     Leave {name} Kingdom!
                 </Typography>
