@@ -1,18 +1,23 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import Kingdom from './Kingdom'
-import { cascadeMoons, cascadeReq, cascadeMultiMoons } from './config'
-
-
+import { kingdomData } from './config/kingdomdata'
+import { GameProvider, useGame } from './contexts/game'
+import { GameContextProps } from 'interface/interface'
+import { Typography } from '@mui/material'
 
 function App() {
 
-
+  const {currentKingdom} = useGame();
 
   return (
     <>
-    <Kingdom name="Cascade" moonNames={cascadeMoons} moonsToLeave={5} moonColor='yellow' multiMoons={cascadeMultiMoons} moonRequirements={cascadeReq}></Kingdom>
+    {currentKingdom < kingdomData.length ? (
+      <Kingdom {...kingdomData[currentKingdom]}></Kingdom>
+    ) : (
+      <Typography>
+        You beat any%
+      </Typography>
+    )}
     </>
   )
 }

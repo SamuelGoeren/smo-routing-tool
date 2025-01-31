@@ -1,27 +1,42 @@
 import { Box, Button, Typography } from "@mui/material";
 import Moon from "./Moon";
-import React from "react";
-
-interface KingdomProps {
-    name: string;
-    moonNames: string[];
-    moonsToLeave: number;
-    moonRequirements: number[];
-    multiMoons: number[];
-    moonColor: string;
-}
+import React, { useEffect } from "react";
+import { KingdomProps } from "interface/interface";
+import { checkMultipleMoonRequirements } from "./util/utils";
+import { useGame } from "./contexts/game";
 
 
+export const Kingdom: React.FC<KingdomProps> = ({
+  name,
+  moonsToLeave,
+  moonNames,
+  moonRequirements,
+  multiMoons,
+  moonColor,
+}) => {
 
-export const Kingdom: React.FC<KingdomProps> = (props) => {
-    const {name, moonsToLeave, moonNames, moonRequirements, multiMoons, moonColor} = props;
-    const moonImage = `/${moonColor}moon.png`;
+  const {leaveKingdom, totalMoons, setTotalMoons, currentKingdom} = useGame();
+
+  const [finishedMoons, setFinishedMoons] = React.useState<number[]>([]);
+  const [availableMoons, setAvailableMoons] = React.useState<number[]>(setupAvailableMoons());
+  const [collectedMoonCount, setCollectedMoonCount] = React.useState<number>(0);
+
+  useEffect(() => {
+    setFinishedMoons([]);
+    setAvailableMoons(setupAvailableMoons());
+    setCollectedMoonCount(0);
+  }, [currentKingdom]);
+
+
+
+
+    const moonImage = `/moonicons/${moonColor}moon.png`;
 
     function setupAvailableMoons() : number[]{
         let result = [];
 
         for(let i = 0; i < moonRequirements.length; i++){
-            if(moonRequirements[i] === -1) result.push(i);
+            if(!Array.isArray(moonRequirements[i]) && moonRequirements[i] === -1) result.push(i);
         }
 
         return result;
@@ -33,19 +48,26 @@ export const Kingdom: React.FC<KingdomProps> = (props) => {
             moonCount = 3;
         }
         setCollectedMoonCount(collectedMoonCount + moonCount);
+        const newFinishedMoons = [...finishedMoons, moon];
 
         let newAvailable = availableMoons.filter(m => m !== moon);
         for(let i = 0; i < moonRequirements.length; i++){
-            if(moonRequirements[i] === moon) newAvailable.push(i);
+          if(newAvailable.includes(i)) continue;
+
+          const requirements = moonRequirements[i];          
+          if((requirements === moon) ||
+                (Array.isArray(requirements) 
+                && (requirements.includes(moon)) 
+                && checkMultipleMoonRequirements(requirements, newFinishedMoons))){
+            newAvailable.push(i);
+          }
         }
         newAvailable.sort((a,b) => a-b);
         setAvailableMoons(newAvailable);
-        setFinishedMoons([...finishedMoons, moon])
+        setFinishedMoons(newFinishedMoons)
     }
 
-    const [finishedMoons, setFinishedMoons] = React.useState<number[]>([]);
-    const [availableMoons, setAvailableMoons] = React.useState<number[]>(setupAvailableMoons());
-    const [collectedMoonCount, setCollectedMoonCount] = React.useState<number>(0);
+
 
 // Define styles using sx prop
 const styles = {
@@ -81,16 +103,21 @@ const styles = {
       },
   };
 
+  function handleLeaveKingdom(){
+      setTotalMoons(totalMoons + collectedMoonCount);
+      leaveKingdom();
+  }
 
     return(
         <>
         <Box sx={styles.container}>
-            <Typography>Collected moons: ({collectedMoonCount})</Typography>
+            <Typography>Collected moons this kingdom: ({collectedMoonCount})</Typography>
             {finishedMoons.map((moon) => (
                 <Typography>
                     {moonNames[moon]}
                 </Typography>
             ))}
+            <Typography> Total moons in the odyssey: {totalMoons}</Typography>
         </Box>
 
         <Box sx={styles.moonContainer}>
@@ -106,7 +133,7 @@ const styles = {
       </Box>
         {(collectedMoonCount >= moonsToLeave) ? (
             <Box sx={styles.buttonContainer}>
-            <Button>
+            <Button onClick={handleLeaveKingdom}>
                 <Typography>
                     Leave {name} Kingdom!
                 </Typography>
