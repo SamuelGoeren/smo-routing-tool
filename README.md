@@ -1,6 +1,4 @@
-<h1>EARLY WIP SMO ROUTING TOOL</h1>
-In collaboration with Dansta
-
+<h1>EARLY WIP SMO ROUTING TOOL (IN COLLABORATION WITH DANSTA)</h1>
 
 This is basically a web simulator of Super Mario Odyssey in which you will be able to click through all kinds of collectables and events like in the original game.
 This will be usable to test/verify routes faster than ever before!
