@@ -22,6 +22,9 @@ Bird Traveling the Desert
 Bird Traveling the Wastes 
 The Lurker Under the Stone 
 The Treasure of Jaxi Ruins 
+Desert Gardening: Plaza Seed 
+Desert Gardening: Ruins Seed 
+Desert Gardening: Seed on the Cliff
 Sand Kingdom Timer Challenge 1 
 Sand Kingdom Timer Challenge 2 
 Sand Kingdom Timer Challenge 3 
@@ -56,6 +59,3 @@ Jaxi Driver
 Jaxi Stunt Driving 
 Strange Neighborhood 
 Above a Strange Neighborhood 
-Desert Gardening: Plaza Seed 
-Desert Gardening: Ruins Seed 
-Desert Gardening: Seed on the Cliff
