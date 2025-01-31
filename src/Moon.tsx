@@ -9,7 +9,7 @@ interface MoonProps {
     available: boolean;
     finished: boolean;
     deselectable: boolean;
-    toDeselect: string[];
+    tooltipInfo: string[];
     onClick: (moon: number) => void;
 }
 
@@ -22,7 +22,7 @@ export const Moon: React.FC<MoonProps> = (props) => {
         available,
         finished,
         deselectable,
-        toDeselect,
+        tooltipInfo: toDeselect,
     } = props;
     const [isHovered, setIsHovered] = useState<boolean>(false);
 
@@ -66,14 +66,17 @@ export const Moon: React.FC<MoonProps> = (props) => {
     );
 
     const tip = toDeselect.join('\n');
+    const deselectTooltip = finished && !deselectable;
+    const unlockTooltip = !available && !finished;
 
     // Conditionally wrap the MoonContent with Tooltip if not selectable
-    return finished && !deselectable ? (
+    return (deselectTooltip || unlockTooltip) ? (
         <Tooltip
             title={
                 <div style={{ whiteSpace: 'pre-line' }}>
                     {
-                        'This moon unlocks requirements that you already finished. Please deselect the following:\n'
+                        deselectTooltip ? 'This moon unlocks requirements that you already finished. Please deselect the following:\n'
+                        : 'This moon requires the following moon(s) to unlock:\n'
                     }
                     {tip}
                 </div>

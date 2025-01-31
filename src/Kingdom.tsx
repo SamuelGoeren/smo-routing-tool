@@ -205,15 +205,26 @@ export const Kingdom: React.FC<KingdomProps> = ({
 
             <Box sx={styles.moonContainer}>
                 {availableMoons.map((moon, index) => {
-                    let toDeselectNames = [];
+                    let tooltipInfo = [];
                     const requirementsToDeselect =
                         checkForFinishedRequirementsBeforeDeselection(index);
                     if (finishedMoons[index] && requirementsToDeselect.length > 0) {
                         for (let i = 0; i < requirementsToDeselect.length; i++) {
                             const moon = requirementsToDeselect[i];
-                            toDeselectNames.push(
+                            tooltipInfo.push(
                                 `${moon + 1}. ${moonNames[moon]}`,
                             );
+                        }
+                    }
+
+                    if(!availableMoons[index] && !finishedMoons[index]){
+                        const req = moonRequirements[index];
+                        if(Array.isArray(req)){
+                            for(const r of req){
+                                tooltipInfo.push(`${r + 1}. ${moonNames[r]}`)
+                            }
+                        } else {
+                            tooltipInfo.push(`${req + 1}. ${moonNames[req]}`);
                         }
                     }
 
@@ -232,7 +243,7 @@ export const Kingdom: React.FC<KingdomProps> = ({
                                 finishedMoons[index] &&
                                 requirementsToDeselect.length === 0
                             }
-                            toDeselect={toDeselectNames}
+                            tooltipInfo={tooltipInfo}
                             name={moonNames[index]}
                             finished={finishedMoons[index]}
                         />
