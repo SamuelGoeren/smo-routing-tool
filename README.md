@@ -1,10 +1,10 @@
 <h1>EARLY WIP SMO ROUTING TOOL</h1>
 
-<h2>About</h2>
+
 This is basically a web simulator of Super Mario Odyssey in which you will be able to click through all kinds of collectables and events like in the original game.
 This will be usable to test/verify routes faster than ever before!
 
-Current features:
+<h2>Current features</h2>
 
 -Play through every moon in the base game (any%)
 
@@ -14,7 +14,7 @@ Current features:
 
 -It is not yet possible to freely go around kingdoms. You can only play in the order of the any% route and not go back to a previous kingdom.
 
-Coming soon (or eventually (hopefully)):
+<h2>Coming soon (or eventually (hopefully))</h2>
 
 -Play through the entire game up to 100%
 
