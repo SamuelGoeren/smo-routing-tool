@@ -1,34 +1,34 @@
 export async function loadFileAndGetLines(filePath: string) {
-  try {
-    // Fetch the file from the public directory
-    const response = await fetch(filePath);
+    try {
+        // Fetch the file from the public directory
+        const response = await fetch(filePath);
 
-    // Check if the response is successful
-    if (!response.ok) {
-      throw new Error(`Failed to load file: ${filePath}`);
+        // Check if the response is successful
+        if (!response.ok) {
+            throw new Error(`Failed to load file: ${filePath}`);
+        }
+
+        // Read the file content as text
+        const fileContents = await response.text();
+
+        // Split the file content into lines by newline characters
+        const lines = fileContents.split('\n');
+
+        // Return the array of lines
+        return lines;
+    } catch (error) {
+        console.error('Error loading file:', error);
+        return []; // Return an empty array if there's an error
     }
-
-    // Read the file content as text
-    const fileContents = await response.text();
-
-    // Split the file content into lines by newline characters
-    const lines = fileContents.split('\n');
-
-    // Return the array of lines
-    return lines;
-  } catch (error) {
-    console.error('Error loading file:', error);
-    return []; // Return an empty array if there's an error
-  }
 }
 
 export function checkMultipleMoonRequirements(
-  requirements: number[],
-  finishedMoons: boolean[],
+    requirements: number[],
+    finishedMoons: boolean[],
 ): boolean {
-  for (const req of requirements) {
-    if (!finishedMoons[req] && req >= 0) return false;
-  }
+    for (const req of requirements) {
+        if (!finishedMoons[req] && req >= 0) return false;
+    }
 
-  return true;
+    return true;
 }

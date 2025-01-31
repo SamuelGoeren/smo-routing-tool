@@ -6,17 +6,17 @@ import { GameContextProps } from 'interface/interface';
 import { Typography } from '@mui/material';
 
 function App() {
-  const { currentKingdom } = useGame();
+    const { currentKingdom } = useGame();
 
-  return (
-    <>
-      {currentKingdom < kingdomData.length ? (
-        <Kingdom {...kingdomData[currentKingdom]}></Kingdom>
-      ) : (
-        <Typography>You beat any%</Typography>
-      )}
-    </>
-  );
+    return (
+        <>
+            {currentKingdom < kingdomData.length ? (
+                <Kingdom {...kingdomData[currentKingdom]}></Kingdom>
+            ) : (
+                <Typography>You beat any%</Typography>
+            )}
+        </>
+    );
 }
 
 export default App;

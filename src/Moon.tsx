@@ -1,54 +1,88 @@
+import { Tooltip } from '@mui/material';
 import React, { useState } from 'react';
 
 interface MoonProps {
-  number: number;
-  name: string;
-  image: string;
-  disabled: boolean;
-  finished: boolean;
-  onClick: (moon: number) => void;
+    number: number;
+    name: string;
+    image: string;
+    available: boolean;
+    finished: boolean;
+    deselectable: boolean;
+    toDeselect: string[];
+    onClick: (moon: number) => void;
 }
 
 export const Moon: React.FC<MoonProps> = (props) => {
-  const { number, name, image, onClick, disabled, finished } = props;
-  const [isHovered, setIsHovered] = useState<boolean>(false);
+    const {
+        number,
+        name,
+        image,
+        onClick,
+        available,
+        finished,
+        deselectable,
+        toDeselect,
+    } = props;
+    const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  function getBorderColor() {
-    if (isHovered && !disabled) return '#fff';
-    if (finished) return '#ffd700';
+    function getBorderColor() {
+        if (isHovered && available) return '#fff';
+        if (isHovered && deselectable) return '#808080';
+        if (finished) return '#ffd700';
 
-    return '#000';
-  }
+        return '#000';
+    }
 
-  return (
-    <div
-      onClick={() => onClick(number)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        border: `4px solid ${getBorderColor()}`,
-        padding: '20px',
-        width: '10vw', // Ensures it takes up at most 10% of the viewport width
-        maxWidth: '200px', // Adds a fallback max width
-        textAlign: 'center',
-        cursor: !disabled ? 'pointer' : '',
-      }}
-    >
-      <img
-        src={image}
-        alt="moon"
-        style={{
-          width: '30%',
-          height: 'auto',
-          marginBottom: '10px',
-          filter: disabled ? 'grayscale(100%)' : '',
-        }}
-      />
-      <p style={{ margin: 0 }}>
-        {number + 1}. {name}
-      </p>
-    </div>
-  );
+    // Reusable Moon component without the Tooltip
+    const MoonContent = (
+        <div
+            onClick={() => onClick(number)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            style={{
+                border: `4px solid ${getBorderColor()}`,
+                padding: '20px',
+                width: '10vw', // Ensures it takes up at most 10% of the viewport width
+                maxWidth: '200px', // Adds a fallback max width
+                textAlign: 'center',
+                cursor: available || deselectable ? 'pointer' : 'not-allowed',
+            }}
+        >
+            <img
+                src={image}
+                alt="moon"
+                style={{
+                    width: '30%',
+                    height: 'auto',
+                    marginBottom: '10px',
+                    filter: !available ? 'grayscale(100%)' : '',
+                }}
+            />
+            <p style={{ margin: 0 }}>
+                {number + 1}. {name}
+            </p>
+        </div>
+    );
+
+    const tip = toDeselect.join('\n');
+
+    // Conditionally wrap the MoonContent with Tooltip if not selectable
+    return !available && !deselectable ? (
+        <Tooltip
+            title={
+                <div style={{ whiteSpace: 'pre-line' }}>
+                    {
+                        'This moon unlocks requirements that you already finished. Please deselect the following:\n'
+                    }
+                    {tip}
+                </div>
+            }
+        >
+            {MoonContent}
+        </Tooltip>
+    ) : (
+        MoonContent
+    );
 };
 
 export default Moon;

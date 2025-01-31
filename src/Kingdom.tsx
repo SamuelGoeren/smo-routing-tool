@@ -6,185 +6,259 @@ import { checkMultipleMoonRequirements } from './util/utils';
 import { useGame } from './contexts/game';
 
 export const Kingdom: React.FC<KingdomProps> = ({
-  name,
-  moonsToLeave,
-  moonNames,
-  moonRequirements,
-  multiMoons,
-  moonColor,
+    name,
+    moonsToLeave,
+    moonNames,
+    moonRequirements,
+    multiMoons,
+    moonColor,
 }) => {
-  const { leaveKingdom, totalMoons, setTotalMoons, currentKingdom } = useGame();
+    const { leaveKingdom, totalMoons, setTotalMoons, currentKingdom } =
+        useGame();
 
-  const [finishedMoons, setFinishedMoons] = React.useState<boolean[]>([]);
-  const [availableMoons, setAvailableMoons] = React.useState<boolean[]>(
-    setupAvailableMoons(),
-  );
-  const [collectedMoonCount, setCollectedMoonCount] = React.useState<number>(0);
+    const [finishedMoons, setFinishedMoons] =
+        React.useState<boolean[]>(initFinishedMoons());
+    const [availableMoons, setAvailableMoons] = React.useState<boolean[]>(
+        setupAvailableMoons(),
+    );
+    const [collectedMoonCount, setCollectedMoonCount] =
+        React.useState<number>(0);
 
-  useEffect(() => {
-    setFinishedMoons([]);
-    setAvailableMoons(setupAvailableMoons());
-    setCollectedMoonCount(0);
-  }, [currentKingdom]);
+    useEffect(() => {
+        setFinishedMoons(initFinishedMoons());
+        setAvailableMoons(setupAvailableMoons());
+        setCollectedMoonCount(0);
+    }, [currentKingdom]);
 
-  const moonImage = `/moonicons/${moonColor}moon.png`;
-  const multiMoonImage = `/moonicons/${moonColor}multimoon.png`;
+    const moonImage = `/moonicons/${moonColor}moon.png`;
+    const multiMoonImage = `/moonicons/${moonColor}multimoon.png`;
 
-  function setupAvailableMoons(): boolean[] {
-    let result = [];
+    function initFinishedMoons(): boolean[] {
+        let result = [];
+        for (let i = 0; i < moonRequirements.length; i++) {
+            result[i] = false;
+        }
 
-    for (let i = 0; i < moonRequirements.length; i++) {
-      result[i] =
-        !Array.isArray(moonRequirements[i]) && moonRequirements[i] === -1;
+        return result;
     }
 
-    return result;
-  }
+    function setupAvailableMoons(): boolean[] {
+        let result = [];
 
-  function collectMoon(moon: number) {
-    //adding moon to counter
-    let moonCount = 1;
-    if (multiMoons.includes(moon)) {
-      moonCount = 3;
-    }
-    setCollectedMoonCount(collectedMoonCount + moonCount);
+        for (let i = 0; i < moonRequirements.length; i++) {
+            result[i] =
+                !Array.isArray(moonRequirements[i]) &&
+                moonRequirements[i] === -1;
+        }
 
-    //mark moon as finished
-    let newFinishedMoons = finishedMoons;
-    newFinishedMoons[moon] = true;
-
-    //generate new available moons
-    let newAvailable = availableMoons;
-    availableMoons[moon] = false;
-    for (let i = 0; i < moonRequirements.length; i++) {
-      if (newAvailable[i]) continue;
-
-      const requirement = moonRequirements[i];
-      if (!Array.isArray(requirement) && requirement === moon) {
-        newAvailable[i] = true;
-      } else if (
-        Array.isArray(requirement) &&
-        checkMultipleMoonRequirements(requirement, newFinishedMoons)
-      ) {
-        newAvailable[i] = true;
-      }
+        return result;
     }
 
-    setAvailableMoons(newAvailable);
-    setFinishedMoons(newFinishedMoons);
-  }
+    function collectMoon(moon: number) {
+        let moonCount = multiMoons.includes(moon) ? 3 : 1;
+        setCollectedMoonCount((prev) => prev + moonCount);
 
-  function unCollectMoon(moon: number) {
-    //check if moon has later already collected requirements and therefore can't be unselected
-    for (let i = 0; i < moonRequirements.length; i++) {
-      const requirement = moonRequirements[i];
-      if (Array.isArray(requirement) && requirement.includes(moon)) {
-        console.log(`deselect moon ${i} first`);
-        return;
-      } else if (requirement === moon) {
-        console.log(`deselect moon ${i} first`);
-        return;
-      }
+        let newFinishedMoons = [...finishedMoons];
+        let newAvailable = [...availableMoons];
+
+        newFinishedMoons[moon] = true;
+        newAvailable[moon] = false;
+
+        for (let i = 0; i < moonRequirements.length; i++) {
+            if (newAvailable[i]) continue;
+
+            const requirement = moonRequirements[i];
+            if (!Array.isArray(requirement) && requirement === moon) {
+                newAvailable[i] = true;
+            } else if (
+                Array.isArray(requirement) &&
+                checkMultipleMoonRequirements(requirement, newFinishedMoons)
+            ) {
+                newAvailable[i] = true;
+            }
+        }
+
+        setFinishedMoons(newFinishedMoons);
+        setAvailableMoons(newAvailable);
     }
-    finishedMoons[moon] = false;
-    availableMoons[moon] = true;
-    //removing moon from counter
-    let moonCount = 1;
-    if (multiMoons.includes(moon)) {
-      moonCount = 3;
-      setCollectedMoonCount(collectedMoonCount - moonCount);
+
+    function checkForFinishedRequirementsBeforeDeselection(
+        moon: number,
+    ): number[] {
+        let result = [];
+        for (let i = 0; i < moonRequirements.length; i++) {
+            if (finishedMoons[i]) {
+                const requirement = moonRequirements[i];
+                if (
+                    (Array.isArray(requirement) &&
+                        requirement.includes(moon)) ||
+                    requirement === moon
+                ) {
+                    result.push(i);
+                }
+            }
+        }
+        return result;
     }
-  }
 
-  function handleMoonClick(moon: number): void {
-    if (finishedMoons[moon]) unCollectMoon(moon);
+    function unCollectMoon(moon: number) {
+        if (moon === 1) debugger;
+        //check if there are any already collected moons that require this moon,
+        //don't allow deselection if that is the case
+        if (checkForFinishedRequirementsBeforeDeselection(moon).length > 0)
+            return;
 
-    //not available, do nothing
-    if (!availableMoons[moon]) return;
+        //allow deselection
+        let newFinishedMoons = [...finishedMoons];
+        let newAvailableMoons = [...availableMoons];
 
-    if (availableMoons[moon] && !finishedMoons[moon]) collectMoon(moon);
-  }
+        newFinishedMoons[moon] = false;
+        newAvailableMoons[moon] = true;
 
-  // Define styles using sx prop
-  const styles = {
-    moonContainer: {
-      display: 'flex', // Align items in a row
-      flexWrap: 'wrap', // Allow wrapping to a new line if no space
-      gap: 2, // Space between items (spacing unit used by MUI)
-    },
-    container: {
-      position: 'absolute', // Use absolute positioning
-      top: 10, // Distance from the top of the screen
-      right: 10, // Distance from the right of the screen
-      zIndex: 1000, // To make sure it's on top of other content
-    },
-    list: {
-      margin: 0,
-      padding: 0,
-      listStyleType: 'none',
-    },
-    item: {
-      background: '#f0f0f0',
-      padding: '8px 16px',
-      margin: '5px 0',
-      borderRadius: '4px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    },
-    buttonContainer: {
-      position: 'fixed',
-      bottom: '20px', // Adjust as needed for margin
-      left: '50%',
-      transform: 'translateX(-50%)',
-      zIndex: 1000, // Make sure it's above other elements
-    },
-  };
+        //check if the deselected moon unlocked anything and make those moons unavailable
+        for (let i = 0; i < moonRequirements.length; i++) {
+            const requirement = moonRequirements[i];
+            if (
+                (Array.isArray(requirement) && requirement.includes(moon)) ||
+                requirement === moon
+            ) {
+                newAvailableMoons[i] = false;
+            }
+        }
 
-  function handleLeaveKingdom() {
-    setTotalMoons(totalMoons + collectedMoonCount);
-    leaveKingdom();
-  }
+        setFinishedMoons(newFinishedMoons);
+        setAvailableMoons(newAvailableMoons);
 
-  return (
-    <>
-      <Box sx={styles.container}>
-        <Typography>
-          Collected moons this kingdom: ({collectedMoonCount})
-        </Typography>
-        {finishedMoons.map(
-          (moon, index) =>
-            moon && <Typography key={index}>{moonNames[index]}</Typography>,
-        )}
-        <Typography> Total moons in the odyssey: {totalMoons}</Typography>
-      </Box>
+        let moonCount = multiMoons.includes(moon) ? 3 : 1;
+        setCollectedMoonCount((prev) => prev - moonCount);
+    }
 
-      <Box sx={styles.moonContainer}>
-        {availableMoons.map((moon, index) => (
-          <Moon
-            key={index}
-            onClick={handleMoonClick}
-            number={index}
-            image={multiMoons.includes(index) ? multiMoonImage : moonImage}
-            disabled={!moon}
-            name={moonNames[index]}
-            finished={finishedMoons[index]}
-          />
-        ))}
-      </Box>
-      {collectedMoonCount >= moonsToLeave ? (
-        <Box sx={styles.buttonContainer}>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleLeaveKingdom}
-          >
-            <Typography>Leave {name} Kingdom!</Typography>
-          </Button>
-        </Box>
-      ) : (
-        <></>
-      )}
-    </>
-  );
+    function handleMoonClick(moon: number): void {
+        if (finishedMoons[moon]) {
+            unCollectMoon(moon);
+            return;
+        }
+
+        //not available, do nothing
+        if (!availableMoons[moon]) return;
+
+        if (availableMoons[moon] && !finishedMoons[moon]) collectMoon(moon);
+    }
+
+    // Define styles using sx prop
+    const styles = {
+        moonContainer: {
+            display: 'flex', // Align items in a row
+            flexWrap: 'wrap', // Allow wrapping to a new line if no space
+            gap: 2, // Space between items (spacing unit used by MUI)
+        },
+        container: {
+            position: 'absolute', // Use absolute positioning
+            top: 10, // Distance from the top of the screen
+            right: 10, // Distance from the right of the screen
+            zIndex: 1000, // To make sure it's on top of other content
+        },
+        list: {
+            margin: 0,
+            padding: 0,
+            listStyleType: 'none',
+        },
+        item: {
+            background: '#f0f0f0',
+            padding: '8px 16px',
+            margin: '5px 0',
+            borderRadius: '4px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        },
+        buttonContainer: {
+            position: 'fixed',
+            bottom: '20px', // Adjust as needed for margin
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000, // Make sure it's above other elements
+        },
+    };
+
+    function handleLeaveKingdom() {
+        setTotalMoons(totalMoons + collectedMoonCount);
+        leaveKingdom();
+    }
+
+    return (
+        <>
+            <Box sx={styles.container}>
+                <Typography>
+                    Collected moons this kingdom: ({collectedMoonCount})
+                </Typography>
+                {finishedMoons.map(
+                    (moon, index) =>
+                        moon && (
+                            <Typography key={index}>
+                                {moonNames[index]}
+                            </Typography>
+                        ),
+                )}
+                <Typography>
+                    {' '}
+                    Total moons in the odyssey: {totalMoons}
+                </Typography>
+            </Box>
+
+            <Box sx={styles.moonContainer}>
+                {availableMoons.map((moon, index) => {
+                    let toDeselectNames = [];
+                    const requirementsToDeselect =
+                        checkForFinishedRequirementsBeforeDeselection(index);
+                    if (requirementsToDeselect.length > 0) {
+                        for (
+                            let i = 0;
+                            i < requirementsToDeselect.length;
+                            i++
+                        ) {
+                            const moon = requirementsToDeselect[i];
+                            toDeselectNames.push(
+                                `${moon + 1}. ${moonNames[moon]}`,
+                            );
+                        }
+                    }
+
+                    return (
+                        <Moon
+                            key={index}
+                            onClick={handleMoonClick}
+                            number={index}
+                            image={
+                                multiMoons.includes(index)
+                                    ? multiMoonImage
+                                    : moonImage
+                            }
+                            available={moon}
+                            deselectable={
+                                finishedMoons[index] &&
+                                requirementsToDeselect.length === 0
+                            }
+                            toDeselect={toDeselectNames}
+                            name={moonNames[index]}
+                            finished={finishedMoons[index]}
+                        />
+                    );
+                })}
+            </Box>
+            {collectedMoonCount >= moonsToLeave ? (
+                <Box sx={styles.buttonContainer}>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        onClick={handleLeaveKingdom}
+                    >
+                        <Typography>Leave {name} Kingdom!</Typography>
+                    </Button>
+                </Box>
+            ) : (
+                <></>
+            )}
+        </>
+    );
 };
 
 export default Kingdom;

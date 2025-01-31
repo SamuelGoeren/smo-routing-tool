@@ -5,9 +5,9 @@ import App from './App';
 import { GameProvider } from './contexts/game';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <GameProvider>
-      <App />
-    </GameProvider>
-  </StrictMode>,
+    <StrictMode>
+        <GameProvider>
+            <App />
+        </GameProvider>
+    </StrictMode>,
 );
