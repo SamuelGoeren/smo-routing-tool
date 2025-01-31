@@ -1,4 +1,5 @@
 import { Tooltip } from '@mui/material';
+import { BLACK, GOLD, GRAY, WHITE } from './config/colors';
 import React, { useState } from 'react';
 
 interface MoonProps {
@@ -26,11 +27,11 @@ export const Moon: React.FC<MoonProps> = (props) => {
     const [isHovered, setIsHovered] = useState<boolean>(false);
 
     function getBorderColor() {
-        if (isHovered && available) return '#fff';
-        if (isHovered && deselectable) return '#808080';
-        if (finished) return '#ffd700';
+        if (isHovered && available) return BLACK;
+        if (isHovered && deselectable) return GRAY;
+        if (finished) return GOLD;
 
-        return '#000';
+        return WHITE;
     }
 
     // Reusable Moon component without the Tooltip
@@ -55,7 +56,7 @@ export const Moon: React.FC<MoonProps> = (props) => {
                     width: '30%',
                     height: 'auto',
                     marginBottom: '10px',
-                    filter: !available ? 'grayscale(100%)' : '',
+                    filter: !available && !finished ? 'grayscale(100%)' : '',
                 }}
             />
             <p style={{ margin: 0 }}>
