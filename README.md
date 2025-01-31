@@ -12,7 +12,7 @@ This will be usable to test/verify routes faster than ever before!
 
 -Accurately simulate moon unlock requirements like in the original game
 
--It is not yet possible to freely go around kingdoms. You can only play in the order of the any% route and not go back to a previous kingdom.
+-It is not yet possible to freely go around kingdoms. You can only play in the kingdom order of the any% route and not go back to a previous kingdom.
 
 <h2>Coming soon (or eventually (hopefully))</h2>
 
