@@ -102,7 +102,6 @@ export const Kingdom: React.FC<KingdomProps> = ({
     }
 
     function unCollectMoon(moon: number) {
-        if (moon === 1) debugger;
         //check if there are any already collected moons that require this moon,
         //don't allow deselection if that is the case
         if (checkForFinishedRequirementsBeforeDeselection(moon).length > 0)
@@ -209,12 +208,8 @@ export const Kingdom: React.FC<KingdomProps> = ({
                     let toDeselectNames = [];
                     const requirementsToDeselect =
                         checkForFinishedRequirementsBeforeDeselection(index);
-                    if (requirementsToDeselect.length > 0) {
-                        for (
-                            let i = 0;
-                            i < requirementsToDeselect.length;
-                            i++
-                        ) {
+                    if (finishedMoons[index] && requirementsToDeselect.length > 0) {
+                        for (let i = 0; i < requirementsToDeselect.length; i++) {
                             const moon = requirementsToDeselect[i];
                             toDeselectNames.push(
                                 `${moon + 1}. ${moonNames[moon]}`,

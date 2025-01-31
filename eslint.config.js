@@ -32,6 +32,24 @@ export default [
             ...prettierConfig.rules,
             'prettier/prettier': 'error',
             'react/react-in-jsx-scope': 'off',
+            'for-direction': 'off',
+            // Enforce consistent brace style for blocks
+            'brace-style': ['error', '1tbs', { allowSingleLine: true }],
+
+            // Enforce consistent spacing inside curly braces
+            'block-spacing': ['error', 'always'],
+
+            // Enforce consistent line breaks inside curly braces
+            'object-curly-newline': [
+                'error',
+                { multiline: true, consistent: true },
+            ],
+
+            // Enforce consistent spacing around keywords (e.g., `for`)
+            'keyword-spacing': ['error', { before: true, after: true }],
+
+            // Prevent unnecessary line breaks in control structures
+            'nonblock-statement-body-position': ['error', 'beside'],
         },
         settings: {
             react: {

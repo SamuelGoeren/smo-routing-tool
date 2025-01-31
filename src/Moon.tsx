@@ -67,7 +67,7 @@ export const Moon: React.FC<MoonProps> = (props) => {
     const tip = toDeselect.join('\n');
 
     // Conditionally wrap the MoonContent with Tooltip if not selectable
-    return !available && !deselectable ? (
+    return finished && !deselectable ? (
         <Tooltip
             title={
                 <div style={{ whiteSpace: 'pre-line' }}>
