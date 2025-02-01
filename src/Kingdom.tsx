@@ -215,9 +215,7 @@ export const Kingdom: React.FC<KingdomProps> = ({
                                 `${moon + 1}. ${moonNames[moon]}`,
                             );
                         }
-                    }
-
-                    if(!availableMoons[index] && !finishedMoons[index]){
+                    } else if(!availableMoons[index] && !finishedMoons[index]){
                         const req = moonRequirements[index];
                         if(Array.isArray(req)){
                             for(const r of req){
